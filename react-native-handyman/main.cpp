@@ -150,7 +150,7 @@ void createNewFabricProject() {
         std::cout << "│       └── main\n";
         std::cout << "│           └── java\n";
         std::cout << "│               └── com\n";
-        std::cout << "│                   └── " << componentName << "\n";
+        std::cout << "│                   └ ── " << componentName << "\n";
         std::cout << "│                     └── " << componentName << "Package.kt\n";
         std::cout << "├── ios\n";
         std::cout << "└── js\n";
