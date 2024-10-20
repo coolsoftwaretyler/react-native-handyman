@@ -18,6 +18,10 @@ Right now, you'll probably have to build from source. I've been building this as
 
 Once you have it built, you can run it from the terminal by calling `./path/to/your/build/react-native-handyman`, or you can set up a symlink to use it as a CLI tool with `sudo ln -s path/to/your/build/react-native-handyman /usr/local/bin/handyman`. Other methods like adding it to your PATH are possible, but I haven't tried that out yet.
 
+### Releases Page
+
+I don't have a lot of experience releasing CLI tools in C++, but [I will upload builds to the releases page](https://github.com/coolsoftwaretyler/react-native-handyman/releases) if that's helpful for folks out there.
+
 ## Usage
 
 Once you have the CLI available in your terminal, you can create a new Fabric Native Component with the following command:
