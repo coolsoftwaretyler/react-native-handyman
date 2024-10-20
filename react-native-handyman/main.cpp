@@ -77,6 +77,11 @@ void createNewFabricProject() {
         fs::create_directory(componentDir / "ios");
         fs::create_directory(componentDir / "js");
 
+        // Create Android-specific directories
+        fs::path androidDir = componentDir / "android" / "src" / "main" / "java" / "com" / componentName;
+        fs::create_directories(androidDir);
+
+
         // Create <componentName>NativeComponent.ts file
         fs::path jsFilePath = componentDir / "js" / (componentName + "NativeComponent.ts");
         std::ofstream jsFile(jsFilePath);
@@ -113,14 +118,46 @@ void createNewFabricProject() {
             std::cerr << "Failed to create " << podspecPath.filename() << "\n";
         }
 
+        // Create the build.gradle file
+        fs::path buildGradlePath = componentDir / "android" / "build.gradle";
+        std::ofstream buildGradleFile(buildGradlePath);
+        if (buildGradleFile.is_open()) {
+            std::unordered_map<std::string, std::string> gradleValues = {{"componentName", componentName}};
+            buildGradleFile << TemplateEngine::render(Templates::REACT_PACKAGE, gradleValues);
+            buildGradleFile.close();
+            std::cout << "Created " << buildGradlePath.filename() << "\n";
+        } else {
+            std::cerr << "Failed to create " << buildGradlePath.filename() << "\n";
+        }
+
+        // Create the ReactPackage implementation file
+        fs::path reactPackagePath = androidDir / (componentName + "Package.kt");
+        std::ofstream reactPackageFile(reactPackagePath);
+        if (reactPackageFile.is_open()) {
+            std::unordered_map<std::string, std::string> packageValues = {{"componentName", componentName}};
+            reactPackageFile << TemplateEngine::render(Templates::REACT_PACKAGE, packageValues);
+            reactPackageFile.close();
+            std::cout << "Created " << reactPackagePath.filename() << "\n";
+        } else {
+            std::cerr << "Failed to create " << reactPackagePath.filename() << "\n";
+        }
+
         std::cout << "Successfully created directory structure for " << componentName << ":\n";
         std::cout << componentDir.string() << "\n";
         std::cout << "├── android\n";
+        std::cout << "│   └── build.gradle\n";
+        std::cout << "│   └── src\n";
+        std::cout << "│       └── main\n";
+        std::cout << "│           └── java\n";
+        std::cout << "│               └── com\n";
+        std::cout << "│                   └── " << componentName << "\n";
+        std::cout << "│                     └── " << componentName << "Package.kt\n";
         std::cout << "├── ios\n";
         std::cout << "└── js\n";
         std::cout << "    └── " << componentName << "NativeComponent.ts\n";
-        std::cout << "    └── package.json\n";
-        std::cout << "    └── " << componentName << ".podspec\n";
+        std::cout << "└── package.json\n";
+        std::cout << "└── " << componentName << ".podspec\n";
+
     } catch (const fs::filesystem_error& e) {
         std::cerr << "Error creating directory structure: " << e.what() << "\n";
     }

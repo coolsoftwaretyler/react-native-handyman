@@ -20,7 +20,7 @@ public:
 };
 
 namespace Templates {
-    const std::string JS_COMPONENT = R"(
+const std::string JS_COMPONENT = R"(
 import type { ViewProps } from 'react-native';
 import type { HostComponent } from 'react-native';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
@@ -34,7 +34,7 @@ export type {{componentName}}NativeComponent = HostComponent<{{componentName}}Pr
 export default codegenNativeComponent<{{componentName}}Props>('{{componentName}}') as {{componentName}}NativeComponent;
 )";
 
-    const std::string PACKAGE_JSON = R"(
+const std::string PACKAGE_JSON = R"(
 {
   "name": "{{componentName}}",
   "version": "0.0.1",
@@ -72,7 +72,7 @@ export default codegenNativeComponent<{{componentName}}Props>('{{componentName}}
   }
 }
 )";
-}
+
 
 const std::string PODSPEC = R"(
 require "json"
@@ -95,3 +95,61 @@ Pod::Spec.new do |s|
   install_modules_dependencies(s)
 end
 )";
+
+const std::string BUILD_GRADLE = R"(
+buildscript {
+  ext.safeExtGet = {prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+  repositories {
+    google()
+    gradlePluginPortal()
+  }
+  dependencies {
+    classpath("com.android.tools.build:gradle:7.3.1")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.facebook.react'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+  compileSdkVersion safeExtGet('compileSdkVersion', 33)
+  namespace "com.{{componentName}}"
+
+  defaultConfig {
+    minSdkVersion safeExtGet('minSdkVersion', 21)
+    targetSdkVersion safeExtGet('targetSdkVersion', 33)
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
+  }
+}
+
+repositories {
+  mavenCentral()
+  google()
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-native'
+}
+)";
+
+const std::string REACT_PACKAGE = R"(
+package com.{{componentName}}
+
+import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.uimanager.ViewManager
+
+class {{componentName}}Package : ReactPackage {
+  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
+    emptyList()
+
+  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
+    emptyList()
+}
+)";
+}
