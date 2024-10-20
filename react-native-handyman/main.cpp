@@ -123,7 +123,7 @@ void createNewFabricProject() {
         std::ofstream buildGradleFile(buildGradlePath);
         if (buildGradleFile.is_open()) {
             std::unordered_map<std::string, std::string> gradleValues = {{"componentName", componentName}};
-            buildGradleFile << TemplateEngine::render(Templates::REACT_PACKAGE, gradleValues);
+            buildGradleFile << TemplateEngine::render(Templates::BUILD_GRADLE, gradleValues);
             buildGradleFile.close();
             std::cout << "Created " << buildGradlePath.filename() << "\n";
         } else {
