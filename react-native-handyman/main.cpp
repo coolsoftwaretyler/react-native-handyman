@@ -101,6 +101,18 @@ void createNewFabricProject() {
             std::cerr << "Failed to create package.json\n";
         }
 
+        // Create <componentName>.podspec file
+        fs::path podspecPath = componentDir / (componentName + ".podspec");
+        std::ofstream podspecFile(podspecPath);
+        if (podspecFile.is_open()) {
+            std::unordered_map<std::string, std::string> podspecValues = {{"componentName", componentName}};
+            podspecFile << TemplateEngine::render(Templates::PODSPEC, podspecValues);
+            podspecFile.close();
+            std::cout << "Created " << podspecPath.filename() << "\n";
+        } else {
+            std::cerr << "Failed to create " << podspecPath.filename() << "\n";
+        }
+
         std::cout << "Successfully created directory structure for " << componentName << ":\n";
         std::cout << componentDir.string() << "\n";
         std::cout << "├── android\n";
@@ -108,6 +120,7 @@ void createNewFabricProject() {
         std::cout << "└── js\n";
         std::cout << "    └── " << componentName << "NativeComponent.ts\n";
         std::cout << "    └── package.json\n";
+        std::cout << "    └── " << componentName << ".podspec\n";
     } catch (const fs::filesystem_error& e) {
         std::cerr << "Error creating directory structure: " << e.what() << "\n";
     }
